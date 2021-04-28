@@ -3,6 +3,7 @@ import usb.core
 import numpy as np
 from tuning import Tuning
 from threading import Thread
+from pixel_ring import PixelRing
 from math import cos, sin, radians
 
 
@@ -101,9 +102,11 @@ class ReachyAudioMicArrayFeatures():
         # Initialize the mic object
         print("Mic object initialization...")
         self.mic = None
+        self.pixel_ring = None
         dev = usb.core.find(idVendor= 0x2886, idProduct= 0x0018)
         if dev:
             self.mic = Tuning(dev)
+            self.pixel_ring = PixelRing(dev)
             print("Done")
         else:
             print("Error when trying to access the mic object.")
@@ -121,20 +124,6 @@ class ReachyAudioMicArrayFeatures():
     ########################################################################
     ############################ VOICE ACTIVITY ############################
     ########################################################################
-            
-    def isVoice(self):
-        """ Return a measure of voice activity.
-
-            :return: Boolean indicating if voice has been detected at the moment 
-            of the measure or None if the measure was impossible due to an 
-            incorrect Tuning instance initialization.
-        """
-        
-        if self.mic is not None:
-            return self.mic.is_voice()
-        else:
-            print("mic is None")
-            return None
     
     def longIsVoice(self, numberMeasures = 40, timeDelay = 0.1):
         """ Allows to make several measurements of voice activity spaced in time.
@@ -165,20 +154,6 @@ class ReachyAudioMicArrayFeatures():
     ########################################################################
     ########################## SOUND LOCALIZATION ##########################
     ########################################################################
-
-    def soundOrientation(self):
-        """ Return a measure of the incomming sound orientation.
-
-            :return: Angle in degrees detected at the moment of the 
-            measure or None if the measure was impossible due to an 
-            incorrect Tuning instance initialization.
-        """
-        
-        if self.mic is not None:
-            return self.mic.direction
-        else:
-            print("mic is None")
-            return None
 
     def longSoundOrientation(self, numberMeasures = 40, timeDelay = 0.1):
         """ Allows to make several measurements of sound orientation spaced in time.

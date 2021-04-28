@@ -12,7 +12,7 @@ These features are mainly :
 - Detecting voice activity.
 - Computing direction of arrival of sounds.
 - Making reachy's head orients to the person which is currently speaking.
-- Control the leds of the microphone array (in development).
+- Control the LEDs of the microphone array.
 - Allowing Reachy to answer to simple questions (in development).
 
 The jupyter notebook named ReachyAudioNotebook shows an example on how to use this library.
@@ -96,10 +96,9 @@ The method orientToInterlocutor allows Reachy's head to orient toward the interl
 
 One of the goal of this library is to implement a complete human computer interaction with audio allowing Reachy to understand what his interlocutor is saying, orient to the interlocutor and give him back a coherent answer. To do so, one need to both record what the interlocutor is saying to recognize it afterward and record at the same time the direction of arrival of the sound to make Reachy's head orient to his interlocutor. Merging the recording of direction of arrival angle thread with the recognizing thread would thus allow to make this human computer interaction possible and realistic.
 
-Another feature currently in development is the access to the leds of the microphone array of Reachy. The use of theses leds could significantly improve the human computer interaction by giving feedback to the interlocutor such as the internal state of the robot (listening, processing data, answering, etc...).
+Another feature currently is the access to the LEDs of the microphone array of Reachy. The use of theses LEDs can significantly improve the human computer interaction by giving feedback to the interlocutor such as the internal state of the robot (listening, processing data, answering, etc...).
 
-Note : To acces the microphone array, make sure that you have installed the pyusb library (https://pypi.org/project/pyusb/). If the mic object fails to initialize, the problem probably comes from a denied acces due to insufficient permissions. In this case, you have to manually add the permission in a .rules file. These two links can help : https://stackoverflow.com/questions/53125118/why-is-python-pyusb-usb-core-access-denied-due-to-permissions-and-why-wont-the and https://stackoverflow.com/questions/31992058/how-can-i-comunicate-with-this-device-using-pyusb/31994168#31994168.
+Note : To acces the microphone array, make sure that you have installed the spidev library (https://pypi.org/project/spidev/) and the pyusb library (https://pypi.org/project/pyusb/). If the mic object fails to initialize, the problem probably comes from a denied acces due to insufficient permissions. In this case, you have to manually add the permission in a .rules file. These two links can help : https://stackoverflow.com/questions/53125118/why-is-python-pyusb-usb-core-access-denied-due-to-permissions-and-why-wont-the and https://stackoverflow.com/questions/31992058/how-can-i-comunicate-with-this-device-using-pyusb/31994168#31994168.
 In our case, the line that we added in the .rules file was : SUBSYSTEM=="usb", ATTRS{idVendor}=="2886",ATTR{idProduct}=="0018", MODE="0666"
 
 For more documentation on the microphone array of Reachy, see : https://wiki.seeedstudio.com/ReSpeaker_Mic_Array_v2.0/
-
