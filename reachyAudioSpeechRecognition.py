@@ -52,8 +52,8 @@ class ReachyAudioSpeechRecognition():
             try:
                 said = self.recognizer.recognize_google(audio)
                 print(said)
-            except Exception as e:
-                print("Exception: " + str(e))
+            except:
+                print("Sorry, I haven't understand you properly, would youmind to speak louder/slower/closer ?")
                 
             return said.lower()
             

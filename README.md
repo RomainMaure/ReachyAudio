@@ -102,3 +102,12 @@ Note : To acces the microphone array, make sure that you have installed the spid
 In our case, the line that we added in the .rules file was : SUBSYSTEM=="usb", ATTRS{idVendor}=="2886",ATTR{idProduct}=="0018", MODE="0666"
 
 For more documentation on the microphone array of Reachy, see : https://wiki.seeedstudio.com/ReSpeaker_Mic_Array_v2.0/
+
+
+## Note
+
+Author : Romain Maure. Work carried out as part of a semester project at the CHILI (Computer Human Interaction for Learning and Instruction) laboratory, EPFL.
+
+Supervisors : Barbara Bruno, Victor Borja Guimera, Utku Norman.
+
+License : MIT License.
