@@ -21,6 +21,7 @@ from math import cos, sin, radians
 
 
 detectedAngle = -1.0
+robotSpeakingMic = False
 
 def orientationCallback(mic):
     """ Callback function performing the recording of the 
@@ -36,59 +37,63 @@ def orientationCallback(mic):
     angles = np.array([])
     voices = np.array([])
     global detectedAngle
+    global robotSpeakingMic
         
     while True:
-        detectedAngle = -1
-            
-        # Record data
-        voiceActivity = mic.is_voice()
-        voices = np.append(voices, voiceActivity)
-        angles = np.append(angles, mic.direction)
-            
-        if voiceActivity:
-            counter = 0
+        if not robotSpeakingMic:
+            detectedAngle = -1
+                
+            # Record data
+            voiceActivity = mic.is_voice()
+            voices = np.append(voices, voiceActivity)
+            angles = np.append(angles, mic.direction)
+                
+            if voiceActivity:
+                counter = 0
+            else:
+                counter += 1
+                    
+            voiceSamples = np.count_nonzero(voices)
+                    
+            # If voice activity has been previously detected and there is no
+            # voice activity anymore since 1 second then compute the
+            # average angle
+            if counter == 20 and voiceSamples > 2:
+                counter = 0
+                doNotConsider = voiceSamples // 2
+                voiceCounter = 1
+                detectedAngle = 0
+                numberDetections = 0
+                for voice, angle in zip(voices, angles):
+                    if voice:
+                        # Do not take into acount the first samples of
+                        # voice activity as the first measures of
+                        # angle are othen strongly correlated to the last
+                        # angle detected
+                        if voiceCounter > doNotConsider:
+                            detectedAngle += angle
+                            numberDetections += 1
+                        else:
+                            voiceCounter += 1
+                               
+                detectedAngle /= numberDetections
+                voices = np.array([])
+                angles = np.array([])
+                    
+            # if nobody speak during a long time, reset the array
+            # to avoid too high array lenght
+            elif counter > 20 and voiceSamples <= 5:
+                counter = 0
+                voices = np.array([])
+                angles = np.array([])
+                
+            if detectedAngle != -1:
+                time.sleep(0.5)
+            else:
+                time.sleep(0.05)
+        
         else:
-            counter += 1
-                
-        voiceSamples = np.count_nonzero(voices)
-                
-        # If voice activity has been previously detected and there is no
-        # voice activity anymore since 1 second then compute the
-        # average angle
-        if counter == 20 and voiceSamples > 2:
-            counter = 0
-            doNotConsider = voiceSamples // 2
-            voiceCounter = 1
-            detectedAngle = 0
-            numberDetections = 0
-            for voice, angle in zip(voices, angles):
-                if voice:
-                    # Do not take into acount the first samples of
-                    # voice activity as the first measures of
-                    # angle are othen strongly correlated to the last
-                    # angle detected
-                    if voiceCounter > doNotConsider:
-                        detectedAngle += angle
-                        numberDetections += 1
-                    else:
-                        voiceCounter += 1
-                           
-            detectedAngle /= numberDetections
-            voices = np.array([])
-            angles = np.array([])
-                
-        # if nobody speak during a long time, reset the array
-        # to avoid too high array lenght
-        elif counter > 20 and voiceSamples <= 5:
-            counter = 0
-            voices = np.array([])
-            angles = np.array([])
-            
-        if detectedAngle != -1:
-            time.sleep(0.5)
-        else:
-            time.sleep(0.05)
-
+            time.sleep(0.1)
 
 class ReachyAudioMicArrayFeatures():
     """ This class regroup all the features related to the built-in
@@ -109,8 +114,8 @@ class ReachyAudioMicArrayFeatures():
             self.pixel_ring = PixelRing(dev)
             print("Done")
         else:
-            print("Error when trying to access the mic object.")
-            print("The methods requiring the microphone won't be able to execute.")
+            print("Error when trying to access the microphone array.")
+            print("The methods requiring the microphone array won't be able to execute.")
             print("For more documentation, see the section ReachyAudioMicArrayFeatures in the README file.")
             
         # Initialize the thread for data recording of voice activity 
@@ -190,8 +195,31 @@ class ReachyAudioMicArrayFeatures():
         """
         
         global detectedAngle
-        
         return detectedAngle
+    
+    def clearDetectedAngle(self):
+        """ Clear the last detected angle. """
+        
+        global detectedAngle
+        detectedAngle = -1.0
+        
+    def setRobotSpeakingMic(self):
+        """ Set that the robot is currently speaking.
+            Allow to not run the code in the recording thread.
+        """
+        
+        global robotSpeakingMic
+        robotSpeakingMic = True
+        self.mic.set_vad_threshold(1000)
+        
+    def clearRobotSpeakingMic(self):
+        """ Set that the robot is not speaking anymore.
+            Allow to run the code in the recording thread.
+        """
+        
+        global robotSpeakingMic
+        robotSpeakingMic = False
+        self.mic.set_vad_threshold(15)
 
     def orientToInterlocutor(self, reachyObject):
         """ Allows Reachy's head to orient toward the interlocutor
@@ -214,3 +242,4 @@ class ReachyAudioMicArrayFeatures():
                     break
         else:
             print("mic is None")
+            

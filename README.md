@@ -35,6 +35,10 @@ rate and the volume of the voice as well as the accent that should be used.
 The class also provide some default parameters in the case you don't want to 
 specify them.
 
+Finally this class also contains the method named conversation. This method 
+uses each part of the library in order to allow Reachy to do a simple conversation 
+with people.
+
 
 ## ReachyAudioPlayerRecorder
 
@@ -77,7 +81,7 @@ The method named recognizeSpeech waits until the user says something and stops t
 
 It is important to notice that the recognizer does not always succed to recognize correctly the text that has been orally said. The success rate of the recognizer depends on the distance of the person speaking to the microphone but also on the way of speaking (volume, rate, voice articulation...).
 
-A feature currently in development is the implementation of the recognizing step by using threads (see explanations in the section bellow).
+This module also provides a callback that allows to do the recognizing step by using threads (see explanations in the section bellow).
 
 To implement this module, the SpeechRecognition library is used. This library regroups several recognizer provided by different companies such as Google, IBM, Microsoft etc. For this module, i used the default recognizer of the SpeechRecognition library which is the google one. This recognizer does not require to create specific account to use it.
 

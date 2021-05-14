@@ -1,6 +1,24 @@
 import speech_recognition as sr
 
 
+detectedSentence = ""
+robotSpeaking = False
+
+def speechRecognitionCallback(recognizer, audio):
+    """ The callback called when we receive audio data (when the interlocutor stopped to speak).
+        Recognize this audio data and update detectedSentence.
+    """
+        
+    global robotSpeaking
+    global detectedSentence
+        
+    if not robotSpeaking:
+        try:
+            detectedSentence = recognizer.recognize_google(audio)
+        except:
+            detectedSentence = ""
+            
+
 class ReachyAudioSpeechRecognition():
     """ The ReachySpeechRecognition class allows Reachy to recognize speech. """
     
@@ -31,11 +49,11 @@ class ReachyAudioSpeechRecognition():
         """ Calibrate the recognizer to ambient noise. """
         
         with self.microphone as source:
-            # listen for 1 second to calibrate the energy threshold for ambient noise levels
+            # listen for 5 second to calibrate the energy threshold for ambient noise levels
             print("Calibrating: please do not speak")
-            self.recognizer.adjust_for_ambient_noise(source)
+            self.recognizer.adjust_for_ambient_noise(source, 5)
             print("Calibrating done")
-            
+          
     def recognizeSpeech(self):
         """ Recognize the incomming speech. 
         
@@ -53,7 +71,38 @@ class ReachyAudioSpeechRecognition():
                 said = self.recognizer.recognize_google(audio)
                 print(said)
             except:
-                print("Sorry, I haven't understand you properly, would youmind to speak louder/slower/closer ?")
+                print("Sorry, I haven't understand you properly, would you mind to speak louder/slower/closer ?")
                 
             return said.lower()
             
+    def getDetectedSentence(self):
+        """ Get the last detected sentence. 
+        
+            :return: The last detected sentence.
+        """
+        
+        global detectedSentence
+        return detectedSentence
+    
+    def clearDetectedSentence(self):
+        """ Clear the last detected sentence. """
+        
+        global detectedSentence
+        detectedSentence = ""
+        
+    def setRobotSpeaking(self):
+        """ Set that the robot is currently speaking.
+            Allow to not run the code in the recognition thread.
+        """
+        
+        global robotSpeaking
+        robotSpeaking = True
+        
+    def clearRobotSpeaking(self):
+        """ Set that the robot is not speaking anymore.
+            Allow to run the code in the recognition thread.
+        """
+        
+        global robotSpeaking
+        robotSpeaking = False         
+    
