@@ -130,4 +130,9 @@ dmypy.json
 
 # Related to the library
 *.wav
+*.meta
+*.index
+*.data-00000-of-00001
+*.pickle
+checkpoint
 Basic Interaction - CHILI Reachy.ipynb
