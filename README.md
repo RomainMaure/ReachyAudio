@@ -13,7 +13,7 @@ These features are mainly :
 - Computing direction of arrival of sounds.
 - Making reachy's head orients to the person which is currently speaking.
 - Control the LEDs of the microphone array.
-- Allowing Reachy to answer to simple questions (in development).
+- Allowing Reachy to answer to simple questions.
 
 The jupyter notebook named ReachyAudioNotebook shows an example on how to use this library.
 
@@ -48,10 +48,8 @@ To record audio samples, one can call the method named recordAudio. By default, 
 
 To play audio, one can call the method named playAudio.
 
-The audio recorder and the audio player are implemented using basic features provided by the PyAudio library.
-The Wave library allows to properly save what has been recorded in an output WAV file or open and load the data to be played from a WAV file.
-
-See : https://pypi.org/project/PyAudio/ and https://pypi.org/project/Wave/
+The audio recorder and the audio player are implemented using basic features provided by the [PyAudio](https://pypi.org/project/PyAudio/) library.
+The [Wave](https://pypi.org/project/Wave/) library allows to properly save what has been recorded in an output WAV file or open and load the data to be played from a WAV file.
 
 
 ## ReachyAudioTextToSpeech
@@ -66,9 +64,7 @@ The method availableVoices can be used to print all the voices that are on your 
 
 A feature currently in development is a synthesizer whose goal is to alter default text to speech voices into voices that sound more robotic.
 
-To implement this module, the pyttsx3 library is used. There exists other libraries providing similar text to speech features but this one has been chosen due to its simplicity to use and understand.
-
-See : https://pypi.org/project/pyttsx3/
+To implement this module, the [pyttsx3](https://pypi.org/project/pyttsx3/) library is used. There exists other libraries providing similar text to speech features but this one has been chosen due to its simplicity to use and understand.
 
 
 ## ReachyAudioSpeechRecognition
@@ -83,14 +79,12 @@ It is important to notice that the recognizer does not always succed to recogniz
 
 This module also provides a callback that allows to do the recognizing step by using threads (see explanations in the section bellow).
 
-To implement this module, the SpeechRecognition library is used. This library regroups several recognizer provided by different companies such as Google, IBM, Microsoft etc. For this module, i used the default recognizer of the SpeechRecognition library which is the google one. This recognizer does not require to create specific account to use it.
-
-See : https://pypi.org/project/SpeechRecognition/
+To implement this module, the [SpeechRecognition](https://pypi.org/project/SpeechRecognition/) library is used. This library regroups several recognizer provided by different companies such as Google, IBM, Microsoft etc. For this module, i used the default recognizer of the SpeechRecognition library which is the google one. This recognizer does not require to create specific account to use it.
 
 
 ## ReachyAudioMicArrayFeatures
 
-The ReachyAudioMicArrayFeatures class allows to acces the built-in algorithms provided by the manufacturers of the microphone array. Based on these built-in algorithms, it also provide more high level interactions for Reachy.
+The ReachyAudioMicArrayFeatures class allows to acces the built-in algorithms provided by the manufacturers of the microphone array. Based on these built-in algorithms, it also provides more high level interactions for Reachy.
 
 Among the features provided by the manufacturers of the microphone array, the ones that are mainly used in this class are the voice activity detection feature and the direction of arrival angle feature.
 These two measures can be accessed by using respectively the methods named isVoice and soundOrientation.
@@ -102,11 +96,47 @@ One of the goal of this library is to implement a complete human computer intera
 
 Another feature is the access to the LEDs of the microphone array of Reachy. The use of theses LEDs can significantly improve the human computer interaction by giving feedback to the interlocutor such as the internal state of the robot (listening, processing data, answering, etc...).
 
-Note : To acces the microphone array, make sure that you have installed the spidev library (https://pypi.org/project/spidev/) and the pyusb library (https://pypi.org/project/pyusb/). If the mic object fails to initialize, the problem probably comes from a denied acces due to insufficient permissions. In this case, you have to manually add the permission in a .rules file. These two links can help : https://stackoverflow.com/questions/53125118/why-is-python-pyusb-usb-core-access-denied-due-to-permissions-and-why-wont-the and https://stackoverflow.com/questions/31992058/how-can-i-comunicate-with-this-device-using-pyusb/31994168#31994168.
-In our case, the line that we added in the .rules file was : SUBSYSTEM=="usb", ATTRS{idVendor}=="2886",ATTR{idProduct}=="0018", MODE="0666"
+Note : To acces the microphone array, make sure that you have installed the [spidev](https://pypi.org/project/spidev/) library and the [pyusb](https://pypi.org/project/pyusb/) library. If the mic object fails to initialize, the problem probably comes from a denied acces due to insufficient permissions. In this case, you have to manually add the permission in a .rules file. These two links can help : [pyusb access denied](https://stackoverflow.com/questions/53125118/why-is-python-pyusb-usb-core-access-denied-due-to-permissions-and-why-wont-the) and [pyusb communication](https://stackoverflow.com/questions/31992058/how-can-i-comunicate-with-this-device-using-pyusb/31994168#31994168).
+In our case, the line that we added in the .rules file was : 
 
-For more documentation on the microphone array of Reachy, see : https://wiki.seeedstudio.com/ReSpeaker_Mic_Array_v2.0/
+```
+SUBSYSTEM=="usb", ATTRS{idVendor}=="2886",ATTR{idProduct}=="0018", MODE="0666"
+```
 
+For more documentation on the microphone array of Reachy, see : [ReSpeaker_Mic_Array_v2.0](https://wiki.seeedstudio.com/ReSpeaker_Mic_Array_v2.0/)
+
+
+## ReachyAudioAnswering
+
+The ReachyAudioAnswering class implements a small neural network allowing Reachy to answer to simple questions. To make it flexible, it uses sentence tokenizing and word stemming such that the network can provide answers to sentences different to the one used for the training. These input sentences have to remain close to the training sentences however.
+
+Most of the methods are utility methods used for the training of the network. The method named answer is the only one used outside of the class (in the conversation method of the ReachyAudio class) and allows to provide coherent answers to the questions of the interlocutor.
+
+The training set is located in the intents.json file. Each sentence intent is characterized by a tag which is what the network should output. The patterns list correspond to all the sentences sharing the same tag and are the network inputs. Each intent has a set of predefined responses. Once the intent of the interlocutor's sentence is determined, we just randomly output one of the responses corresponding to this specific intent.
+
+Note : You can modify this intents.json file to adapt the network to your specific conversation.
+
+Once the training of the network's model is done, the model and the training data are saved such that the training does not have to be executed every time a reachyAudio object is instantiated. If you change the intents.json file, you will thus have to delete the model file and the data.pickle file, otherwise the previous model will continue to be used even if you changed the intents.json file.
+
+This class uses several python libraries. The network is done using Pytorch while the sentence processing uses nltk (Natural Language Toolkit). The class also uses the json library to properly read the intents.json file and the pickle library to store the training data as well as the vocabulary of the network. Be sure to have all these libraries installed.
+
+Note : The installation of Pytorch on Reachy's raspberry pi requires to use wheel files and to install some dependencies. You can download the files torch-1.8.0a0+56b43f4-cp37-cp37m-linux_armv7l.whl and torchvision-0.9.0a0+8fb5838-cp37-cp37m-linux_armv7l.whl from the following [github repo](https://github.com/sungjuGit/PyTorch-and-Vision-for-Raspberry-Pi-4B).
+Then you can run on the terminal the following commands :
+
+```
+sudo pip3 install torch-1.8.0a0+56b43f4-cp37-cp37m-linux_armv7l.whl
+sudo pip3 install torchvision-0.9.0a0+8fb5838-cp37-cp37m-linux_armv7l.whl
+sudo apt install libopenblas-dev libblas-dev m4 cmake cython python3-dev python3-yaml python3-setuptools
+sudo apt-get install libavutil-dev libavcodec-dev libavformat-dev libswscale-dev
+```
+
+Note : The nltk library might require to download punkt. To do this, you can run the following commands in a terminal :
+
+```
+python3
+import nltk
+nltk.download('punkt')
+```
 
 ## Note
 

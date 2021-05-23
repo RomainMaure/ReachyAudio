@@ -1,10 +1,8 @@
 import nltk
 import json
+import torch
 import random
 import pickle
-import tflearn
-import numpy as np
-from tensorflow.python.framework import ops
 from nltk.stem.lancaster import LancasterStemmer
 
 stemmer = LancasterStemmer()
@@ -25,6 +23,8 @@ class ReachyAudioAnswering():
         """ Train the model of the network or load
             it if it already exists.
         """
+        
+        print("Initializing Reachy answering model...")
         
         # Load the json file containing the training data
         with open("intents.json") as myFile:
@@ -68,8 +68,9 @@ class ReachyAudioAnswering():
             
 
             # Transform each training sentence into a bag of words (an input for the network)
+            # and compute the corresponding expected output
             for x, doc in enumerate(docs_x):
-                bag = self.bag_of_words(doc).tolist()
+                bag = self.bag_of_words(doc)
 
                 # Expected output
                 output_row = out_empty[:]
@@ -78,37 +79,89 @@ class ReachyAudioAnswering():
                 # We add the input and the expected output to the training set
                 train_input.append(bag)
                 train_target.append(output_row)
-
-
-            train_input = np.array(train_input)
-            train_target = np.array(train_target)
             
             # We store the computed training set for future uses
             with open("data.pickle", "wb") as f:
                 pickle.dump((self.words, self.labels, train_input, train_target), f)
 
 
-        # Initialization of the neural network
-        ops.reset_default_graph()
-
-        net = tflearn.input_data(shape = [None, len(train_input[0])])
-        net = tflearn.fully_connected(net, 8)
-        net = tflearn.fully_connected(net, 8)
-        net = tflearn.fully_connected(net, len(train_target[0]), activation = "softmax")
-        net = tflearn.regression(net)
-
         # Load the model if it already exists, train it otherwise
         try:
-            print("Loading answering model...")
-            self.model = tflearn.DNN(net)
-            self.model.load("model.tflearn")
-            print("Loading answering model: Done")
+            self.model = torch.load('model.pth')
         except:
-            print("Training answering model...")
-            self.model = tflearn.DNN(net)
-            self.model.fit(train_input, train_target, n_epoch = 1000, batch_size = 8, snapshot_epoch = False)
-            self.model.save("model.tflearn")
-            print("Training answering model: Done")
+            self.model = torch.nn.Sequential(
+            torch.nn.Linear(len(train_input[0]), 8),
+            torch.nn.Linear(8, 8),
+            torch.nn.Linear(8, len(train_target[0])), 
+            torch.nn.Softmax(dim=-1))
+
+            self.train_model(torch.Tensor(train_input), torch.Tensor(train_target))
+            torch.save(self.model, 'model.pth')
+        
+        print("Done")
+
+
+    def train_model(self, train_input, train_target, nb_epochs = 500, show_metric = False):
+        """ Train the model of the network.
+
+            :param data_input: The inputs of the training set.
+            :param data_target: The corresponding outputs of the training set.
+            :param nb_epochs: The number of times that the learning algorithm will 
+                              work through the entire training dataset.
+            :param show_metric: Allow to show the performance of the model during his training.
+        """
+
+        criterion = torch.nn.MSELoss()
+        optimizer = torch.optim.Adam(self.model.parameters())
+        
+        for e in range(nb_epochs):
+            # Compute the output of the model (forward pass)
+            output = self.model(train_input)
+
+            # Compute the error between the predicted output and the ground truth
+            loss = criterion(output, train_target)
+
+            # Reset the sum of the gradients (the previous epoch should not influence the current epoch)
+            self.model.zero_grad()
+
+            # Apply a backward pass
+            loss.backward()
+
+            # Update the parameters of the model with respect to the backward pass previously done
+            optimizer.step()
+
+            # Compute the error of the current state of the network's model with respect to the training set
+            if show_metric:
+                with torch.no_grad():
+                    print("Epoch {} -> Train error = {:.02f} %".format(
+                        e, self.compute_nb_errors(train_input, train_target) / train_input.size(0) * 100))
+
+
+    def compute_nb_errors(self, data_input, data_target):
+        """ Compute the number of classification errors
+            of our network's model on a set specified by data_input
+            and data_target.
+
+            :param data_input: The inputs of the testing set.
+            :param data_target: The corresponding outputs of the testing set.
+            :return: The number of classification errors made on the testing set.
+        """
+
+        nb_data_errors = 0
+
+        # Compute the output of the model 
+        output = self.model(data_input)
+
+        # Take the most confident output as the result
+        predicted_classes = torch.argmax(output, 1)
+        expected_classes = torch.argmax(data_target, 1)
+
+        # Compare the prediction of the model with the ground truth
+        for predicted_classe, expected_classe in zip(predicted_classes, expected_classes):
+            if predicted_classe != expected_classe:
+                nb_data_errors = nb_data_errors + 1
+
+        return nb_data_errors
 
 
     def bag_of_words(self, input_sentence):
@@ -139,7 +192,7 @@ class ReachyAudioAnswering():
             else:
                 bag.append(0)
 
-        return np.array(bag)
+        return bag
     
 
     def answer(self, input_sentence):
@@ -153,10 +206,10 @@ class ReachyAudioAnswering():
         """
         
         # Compute the output of the model with respect to the input sentence
-        results = self.model.predict([self.bag_of_words(input_sentence)])[0]
+        results = self.model(torch.Tensor(self.bag_of_words(input_sentence)))
         
         # Take the most confident output as the result
-        results_index = np.argmax(results)
+        results_index = torch.argmax(results)
         intent = self.labels[results_index]
 
         # Provide an answer only if the network
@@ -174,3 +227,4 @@ class ReachyAudioAnswering():
             answer = "I didn't get that, can you try again ?"
             
         return intent, answer
+
