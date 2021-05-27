@@ -39,7 +39,7 @@ class ReachyAudio(ReachyAudioPlayerRecorder, ReachyAudioTextToSpeech, ReachyAudi
         
         # Use the LEDs to make the conversation more interactive
         self.pixel_ring.set_brightness(0x12)
-        self.pixel_ring.set_color_palette(0xFF4F00, 0xFFFF00)
+        self.pixel_ring.set_color_palette(self.COLORS['ORANGE'], self.COLORS['YELLOW'])
         self.pixel_ring.speak()
         
         # Initialize the recognition thread so that we can do both recognition and orientation detection
@@ -60,7 +60,7 @@ class ReachyAudio(ReachyAudioPlayerRecorder, ReachyAudioTextToSpeech, ReachyAudi
                     # We also change the LEDs color to show to the interlocutor than Reachy is now in the answering state
                     self.setRobotSpeaking()
                     self.setRobotSpeakingMic()
-                    self.pixel_ring.set_color_palette(0xFF00FF, 0x00FFFF)
+                    self.pixel_ring.set_color_palette(self.COLORS['MAGENTA'], self.COLORS['CYAN'])
                     print("Reachy heared a voice at ", stored_angle, "degrees.")
                     print("Reachy thinks you said: ", said)
 
@@ -84,7 +84,7 @@ class ReachyAudio(ReachyAudioPlayerRecorder, ReachyAudioTextToSpeech, ReachyAudi
                     self.clearDetectedAngle()
                     self.clearRobotSpeakingMic()
                     self.clearRobotSpeaking()
-                    self.pixel_ring.set_color_palette(0xFF4F00, 0xFFFF00)
+                    self.pixel_ring.set_color_palette(self.COLORS['ORANGE'], self.COLORS['YELLOW'])
                     print("Listening...")
 
                 time.sleep(0.1)
@@ -99,6 +99,6 @@ class ReachyAudio(ReachyAudioPlayerRecorder, ReachyAudioTextToSpeech, ReachyAudi
         self.clearDetectedAngle()
         self.clearRobotSpeakingMic()
         self.clearRobotSpeaking()
-        self.pixel_ring.set_color_palette(0xFF4F00, 0xFFFF00)
+        self.pixel_ring.set_color_palette(self.COLORS['ORANGE'], self.COLORS['YELLOW'])
         print("End of conversation !")
 

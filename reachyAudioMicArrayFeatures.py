@@ -106,6 +106,16 @@ class ReachyAudioMicArrayFeatures():
     def __init__(self):
         # Initialize the mic object
         print("Mic object initialization...")
+        
+        self.COLORS = {}
+        self.COLORS['RED'] = 0xFF0000
+        self.COLORS['GREEN'] = 0x00FF00
+        self.COLORS['BLUE'] = 0x0000FF
+        self.COLORS['CYAN'] = 0x00FFFF
+        self.COLORS['YELLOW'] = 0xFFFF00
+        self.COLORS['MAGENTA'] = 0xFF00FF
+        self.COLORS['ORANGE']= 0xFF4F00
+        
         self.mic = None
         self.pixel_ring = None
         dev = usb.core.find(idVendor= 0x2886, idProduct= 0x0018)
