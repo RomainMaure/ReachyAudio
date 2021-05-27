@@ -130,6 +130,7 @@ dmypy.json
 
 # Related to the library
 *.wav
+*.mp3
 *.pth
 *.pickle
 Basic Interaction - CHILI Reachy.ipynb

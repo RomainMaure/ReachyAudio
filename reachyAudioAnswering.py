@@ -221,10 +221,7 @@ class ReachyAudioAnswering():
                     # related to the detected input sentence intent
                     responses = tg["responses"]
                     answer = random.choice(responses)
-                    break
-        else:
-            intent = None
-            answer = "I didn't get that, can you try again ?"
+                    return intent, answer
             
-        return intent, answer
+        return None, "I didn't get that, can you try again ?"
 

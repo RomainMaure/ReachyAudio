@@ -25,12 +25,13 @@ class ReachyAudio(ReachyAudioPlayerRecorder, ReachyAudioTextToSpeech, ReachyAudi
         self.engine.stop()
         
         
-    def conversation(self, reachyObject):
+    def conversation(self, reachyObject, alteredVoice = False):
         """ Allows Reachy to converse with people.
             For instance, Reachy does not provide answers but
             only says what he recognized.
 
             :param reachyObject: Instance of the Reachy class.
+            :param alteredVoice: If we want Reachy's voice to sound more robotic like.
         """
         
         # Allow to store the detected angle as the recognition thread
@@ -71,7 +72,7 @@ class ReachyAudio(ReachyAudioPlayerRecorder, ReachyAudioTextToSpeech, ReachyAudi
 
                     # Answer to the interlocutor
                     tag, answer = self.answer(said)
-                    self.speak(answer)
+                    self.speak(answer, alteredVoice= alteredVoice)
                     time.sleep(1)
                     
                     # End of the conversation depending on the sentence intent

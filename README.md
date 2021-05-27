@@ -7,7 +7,7 @@ These features are mainly :
 - Recording audio files.
 - Playing audio files.
 - Making Reachy speak.
-- Synthesize Reachy's voice to make it sound more robotic like (in development).
+- Synthesize Reachy's voice to make it sound more robotic like.
 - Recognizing what an interlocutor is saying.
 - Detecting voice activity.
 - Computing direction of arrival of sounds.
@@ -62,9 +62,12 @@ The method setEngineProperties allows to specify some parameters of the text to 
 
 The method availableVoices can be used to print all the voices that are on your system and that can be used.
 
-A feature currently in development is a synthesizer whose goal is to alter default text to speech voices into voices that sound more robotic.
+To implement these methods, the [pyttsx3](https://pypi.org/project/pyttsx3/) library is used.
 
-To implement this module, the [pyttsx3](https://pypi.org/project/pyttsx3/) library is used. There exists other libraries providing similar text to speech features but this one has been chosen due to its simplicity to use and understand.
+The method speak also provides a synthesizer feature whose goal is to alter default text to speech voice into a voice that sounds more robotic for Reachy.
+Due to some bugs with the method save_to_file of the pyttsx3 library, this synthesizer feature uses the [gTTS](https://pypi.org/project/gTTS/) library instead.
+The synthesized voice will thus be always the same and the method setEngineProperties won't have any effects on it.
+Finally, this synthesizer also uses the [numpy](https://pypi.org/project/numpy/), [scipy](https://pypi.org/project/scipy/) and [pydub](https://pypi.org/project/pydub/) libraries.
 
 
 ## ReachyAudioSpeechRecognition
