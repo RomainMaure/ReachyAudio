@@ -1,25 +1,36 @@
+"""This module defines the ReachyAudioPlayerRecorder class."""
+
 import wave
 import pyaudio
 
 
 class ReachyAudioPlayerRecorder():
-    """ This class allows to record audio samples and save them as WAV file.
-        It also allows to play WAV files.
+    """ReachyAudioPlayerRecorder class.
+
+    This class allows to record audio samples and save them as WAV file.
+    It also allows to play WAV files.
     """
-    
+
     def __init__(self):
-        self.chunk = 1024                # number of frames the signal is split into
-        self.rate = 44100                # number of frames per second
-        self.channels = 2                # number of samples per frame
-        self.format = pyaudio.paInt16    # number of bytes per sample
+        """Define constants for playing and recording."""
+        # number of frames the signal is split into
+        self.chunk = 1024
 
-    def recordAudio(self, recordTime = 5, wavOutputFileName = "output.wav"):
-        """ Record audio samples and save them as a WAV file.
+        # number of frames per second
+        self.rate = 44100
 
-            :param recordTime: Duration of the recording.
-            :param wavOutputFileName: Name of the WAV output file.
+        # number of samples per frame
+        self.channels = 2
+
+        # number of bytes per sample
+        self.format = pyaudio.paInt16
+
+    def recordAudio(self, recordTime=5, wavOutputFileName="output.wav"):
+        """Record audio samples and save them as a WAV file.
+
+        :param recordTime: Duration of the recording.
+        :param wavOutputFileName: Name of the WAV output file.
         """
-
         try:
             # Create the PyAudio object and open the PyAudio stream
             p = pyaudio.PyAudio()
@@ -33,9 +44,9 @@ class ReachyAudioPlayerRecorder():
 
             frames = []
 
-            # our signal is composed of rate*recordTime frames
-            # since our for loop is not repeated for each frame but only for each
-            # chunk, the number of loops has to be divided by the chunk size
+            # our signal is composed of rate*recordTime frames. Since our for
+            # loop is not repeated for each frame but only for each chunk,
+            # the number of loops has to be divided by the chunk size
             for _ in range(int(self.rate / self.chunk * recordTime)):
                 data = stream.read(self.chunk)
                 frames.append(data)
@@ -57,14 +68,12 @@ class ReachyAudioPlayerRecorder():
 
         except Exception as e:
             print("Exception: " + str(e))
-            
-            
-    def playAudio(self, wavFileName):
-        """ Play a WAV file.
 
-            :param wavFileName: Name of the WAV file to play.
+    def playAudio(self, wavFileName):
+        """Play a WAV file.
+
+        :param wavFileName: Name of the WAV file to play.
         """
-        
         try:
             # Open the wav file
             wf = wave.open(wavFileName, 'rb')
@@ -90,6 +99,6 @@ class ReachyAudioPlayerRecorder():
             p.terminate()
 
             wf.close()
-            
+
         except Exception as e:
             print("Exception: " + str(e))

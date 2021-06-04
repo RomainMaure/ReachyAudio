@@ -1,7 +1,7 @@
-"""
-This file comes from the manufacturer of the mic array.
-It allows to call some built-in algorithms like source
-localisation, voice detection etc...
+"""This file comes from the manufacturer of the mic array.
+
+It allows to call some built-in algorithms like source localisation, voice
+detection etc...
 """
 
 # -*- coding: utf-8 -*-

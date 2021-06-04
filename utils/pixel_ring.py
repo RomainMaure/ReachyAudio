@@ -1,10 +1,11 @@
-"""
-This file comes from the manufacturer of the mic array.
+"""This file comes from the manufacturer of the mic array.
+
 It allows to control the LEDs of the microphone array.
 """
 
 import usb.core
 import usb.util
+
 
 class PixelRing:
     TIMEOUT = 8000
