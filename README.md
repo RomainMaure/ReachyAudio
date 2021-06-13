@@ -17,7 +17,6 @@ These features are mainly :
 
 The jupyter notebook named ReachyAudioNotebook shows an example on how to use this library.
 
-
 ## ReachyAudio
 
 All of the features described above are grouped in a class named ReachyAudio
@@ -40,6 +39,10 @@ uses each part of the library in order to allow Reachy to do a simple conversati
 with people.
 
 
+https://user-images.githubusercontent.com/63020507/121800805-2ec59b00-cc34-11eb-9ccd-d2e23f30eb4f.mp4
+
+
+
 ## ReachyAudioPlayerRecorder
 
 This class allows to record audio samples and save them as WAV file. It also allows to play WAV files.
@@ -50,6 +53,10 @@ To play audio, one can call the method named playAudio.
 
 The audio recorder and the audio player are implemented using basic features provided by the [PyAudio](https://pypi.org/project/PyAudio/) library.
 The [Wave](https://pypi.org/project/Wave/) library allows to properly save what has been recorded in an output WAV file or open and load the data to be played from a WAV file.
+
+
+https://user-images.githubusercontent.com/63020507/121801316-0c814c80-cc37-11eb-8f3a-8c57cedd3c21.mp4
+
 
 
 ## ReachyAudioTextToSpeech
@@ -70,6 +77,13 @@ The synthesized voice will thus be always the same and the method setEnginePrope
 Finally, this synthesizer also uses the [numpy](https://pypi.org/project/numpy/), [scipy](https://pypi.org/project/scipy/) and [pydub](https://pypi.org/project/pydub/) libraries.
 
 
+https://user-images.githubusercontent.com/63020507/121801323-12772d80-cc37-11eb-88f0-f07c47f42898.mp4
+
+
+https://user-images.githubusercontent.com/63020507/121801326-173be180-cc37-11eb-8165-d9f3dc3c8c39.mp4
+
+
+
 ## ReachyAudioSpeechRecognition
 
 The ReachyAudioSpeechRecognition class allows Reachy to recognize speech.
@@ -83,6 +97,10 @@ It is important to notice that the recognizer does not always succed to recogniz
 This module also provides a callback that allows to do the recognizing step by using threads (see explanations in the section bellow).
 
 To implement this module, the [SpeechRecognition](https://pypi.org/project/SpeechRecognition/) library is used. This library regroups several recognizer provided by different companies such as Google, IBM, Microsoft etc. For this module, i used the default recognizer of the SpeechRecognition library which is the google one. This recognizer does not require to create specific account to use it.
+
+
+https://user-images.githubusercontent.com/63020507/121801330-1dca5900-cc37-11eb-9c92-74a24bc14f61.mp4
+
 
 
 ## ReachyAudioMicArrayFeatures
@@ -107,6 +125,14 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="2886",ATTR{idProduct}=="0018", MODE="0666"
 ```
 
 For more documentation on the microphone array of Reachy, see : [ReSpeaker_Mic_Array_v2.0](https://wiki.seeedstudio.com/ReSpeaker_Mic_Array_v2.0/)
+
+
+https://user-images.githubusercontent.com/63020507/121801345-2753c100-cc37-11eb-89a5-69e4e6a9f68c.mp4
+
+
+https://user-images.githubusercontent.com/63020507/121801432-831e4a00-cc37-11eb-8e0d-b39d3a7ae3c1.mp4
+
+
 
 
 ## ReachyAudioAnswering
